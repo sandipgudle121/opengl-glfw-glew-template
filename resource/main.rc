@@ -1,0 +1,6 @@
+#include <Windows.h>
+#include "include\main.h"
+LEAF_ICON ICON "resource\icons\leaf_48x48.ico"
+
+
+
