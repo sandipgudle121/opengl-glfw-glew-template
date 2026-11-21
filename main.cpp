@@ -5,6 +5,7 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "Shader.h"
+#include "Texture.h"
 
 #include <cstdio>
 
@@ -54,10 +55,10 @@ int main()
     glGetError(); // GLEW can generate a harmless GL_INVALID_ENUM in core mode.
 
     const float positions[] = {
-        -0.5f, 0.5f,
-        0.5f, 0.5f,
-        0.5f,-0.5f,
-        -0.5f, -0.5f
+        -0.5f,  0.5f, 0.0f, 1.0f,
+         0.5f,  0.5f, 1.0f, 1.0f,
+         0.5f, -0.5f, 1.0f, 0.0f,
+        -0.5f, -0.5f, 0.0f, 0.0f
     };
 
     const unsigned int indices[] = {0, 1, 2, 2, 3, 0};
@@ -75,11 +76,14 @@ int main()
 
             VertexBuffer vertexBuffer(positions, sizeof(positions));
 
-            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), nullptr);
+            glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), nullptr);
             glEnableVertexAttribArray(0);
+            glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<const void *>(2 * sizeof(float)));
+            glEnableVertexAttribArray(1);
 
             IndexBuffer indexBuffer(indices, 6);
 
+            Texture texture("resource/textures/anime_collage.jpg");
             vertexArray.Unbind();
 
             if (logFile)
@@ -94,7 +98,8 @@ int main()
                 glClear(GL_COLOR_BUFFER_BIT);
 
                 shader.Bind();
-                shader.SetUniform4f("u_Color", 1.0f, 0.0f, 0.0f, 1.0f);
+                shader.SetUniform1i("u_Texture", 0);
+                texture.Bind(0);
                 vertexArray.Bind();
                 glDrawElements(GL_TRIANGLES, indexBuffer.GetCount(), GL_UNSIGNED_INT, nullptr);
 
